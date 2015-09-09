@@ -46,13 +46,10 @@ final class MixedContent extends TemplateElement {
      * Processes the contents of the internal <tt>TemplateElement</tt> list,
      * and outputs the resulting text.
      */
-    void accept(Environment env) 
-        throws TemplateException, IOException 
-    {
-        int ln = getRegulatedChildCount();
-        for (int i = 0; i < ln; i++) {
-            env.visit(getRegulatedChild(i));
-        }
+    @Override
+    TemplateElementsToVisit accept(Environment env)
+        throws TemplateException, IOException {
+        return new TemplateElementsToVisit(getRegulatedChildren(), false);
     }
 
     protected String dump(boolean canonical) {

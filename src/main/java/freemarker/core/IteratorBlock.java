@@ -60,8 +60,10 @@ final class IteratorBlock extends TemplateElement {
         this.isForEach = isForEach;
     }
 
-    void accept(Environment env) throws TemplateException, IOException {
+    @Override
+    TemplateElementsToVisit accept(Environment env) throws TemplateException, IOException {
         acceptWithResult(env);
+        return null;
     }
     
     boolean acceptWithResult(Environment env) throws TemplateException, IOException 

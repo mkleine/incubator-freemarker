@@ -51,9 +51,9 @@ final class TransformBlock extends TemplateElement {
         setNestedBlock(nestedBlock);
     }
 
-    void accept(Environment env) 
-    throws TemplateException, IOException
-    {
+    @Override
+    TemplateElementsToVisit accept(Environment env)
+    throws TemplateException, IOException {
         TemplateTransformModel ttm = env.getTransform(transformExpression);
         if (ttm != null) {
             Map args;
@@ -77,6 +77,7 @@ final class TransformBlock extends TemplateElement {
                     transformExpression, tm,
                     "transform", new Class[] { TemplateTransformModel.class }, env);
         }
+        return null;
     }
 
     protected String dump(boolean canonical) {

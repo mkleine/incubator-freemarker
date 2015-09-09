@@ -22,8 +22,10 @@ import freemarker.template.TemplateException;
 
 final class FallbackInstruction extends TemplateElement {
 
-    void accept(Environment env) throws IOException, TemplateException {
+    @Override
+    TemplateElementsToVisit accept(Environment env) throws IOException, TemplateException {
         env.fallback();
+        return null;
     }
 
     protected String dump(boolean canonical) {

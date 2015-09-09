@@ -37,7 +37,8 @@ final class IfBlock extends TemplateElement {
         addRegulatedChild(block);
     }
 
-    void accept(Environment env) throws TemplateException, IOException {
+    @Override
+    TemplateElementsToVisit accept(Environment env) throws TemplateException, IOException {
         int ln  = getRegulatedChildCount();
         for (int i = 0; i< ln; i++) {
             ConditionalBlock cblock = (ConditionalBlock) getRegulatedChild(i);
@@ -45,11 +46,11 @@ final class IfBlock extends TemplateElement {
             env.replaceElementStackTop(cblock);
             if (condition == null || condition.evalToBoolean(env)) {
                 if (cblock.getNestedBlock() != null) {
-                    env.visitByHiddingParent(cblock.getNestedBlock());
+                    return new TemplateElementsToVisit(cblock.getNestedBlock(), true);
                 }
-                return;
             }
         }
+        return null;
     }
 
     TemplateElement postParseCleanup(boolean stripWhitespace)

@@ -51,9 +51,11 @@ final class BodyInstruction extends TemplateElement {
      * what it was before macro invocation to implement this properly.
      * I (JR) realized this thanks to some incisive comments from Daniel Dekany.
      */
-    void accept(Environment env) throws IOException, TemplateException {
+    @Override
+    TemplateElementsToVisit accept(Environment env) throws IOException, TemplateException {
         Context bodyContext = new Context(env);
         env.invokeNestedContent(bodyContext);
+        return null;
     }
 
     protected String dump(boolean canonical) {

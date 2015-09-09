@@ -23,8 +23,10 @@ import java.io.IOException;
  */
 final class FlushInstruction extends TemplateElement {
 
-    void accept(Environment env) throws IOException {
+    @Override
+    TemplateElementsToVisit accept(Environment env) throws IOException {
         env.getOut().flush();
+        return null;
     }
 
     protected String dump(boolean canonical) {

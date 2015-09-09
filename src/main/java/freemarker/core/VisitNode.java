@@ -38,7 +38,8 @@ final class VisitNode extends TemplateElement {
         this.namespaces = namespaces;
     }
 
-    void accept(Environment env) throws IOException, TemplateException {
+    @Override
+    TemplateElementsToVisit accept(Environment env) throws IOException, TemplateException {
         TemplateModel node = targetNode.eval(env);
         if (!(node instanceof TemplateNodeModel)) {
             throw new NonNodeException(targetNode, node, env);
@@ -67,6 +68,7 @@ final class VisitNode extends TemplateElement {
             }
         }
         env.invokeNodeHandlerFor((TemplateNodeModel) node, (TemplateSequenceModel) nss);
+        return null;
     }
 
     protected String dump(boolean canonical) {

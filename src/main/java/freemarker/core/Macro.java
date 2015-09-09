@@ -86,8 +86,10 @@ public final class Macro extends TemplateElement implements TemplateModel {
         return name;
     }
 
-    void accept(Environment env) {
+    @Override
+    TemplateElementsToVisit accept(Environment env) {
         env.visitMacroDef(this);
+        return null;
     }
 
     protected String dump(boolean canonical) {

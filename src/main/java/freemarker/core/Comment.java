@@ -32,8 +32,10 @@ public final class Comment extends TemplateElement {
         this.text = text;
     }
 
-    void accept(Environment env) {
+    @Override
+    TemplateElementsToVisit accept(Environment env) {
         // do nothing, skip the body
+        return null;
     }
 
     protected String dump(boolean canonical) {

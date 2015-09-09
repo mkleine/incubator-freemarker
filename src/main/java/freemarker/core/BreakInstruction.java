@@ -21,7 +21,8 @@ package freemarker.core;
  */
 final class BreakInstruction extends TemplateElement {
 
-    void accept(Environment env) {
+    @Override
+    TemplateElementsToVisit accept(Environment env) {
         throw Break.INSTANCE;
     }
 

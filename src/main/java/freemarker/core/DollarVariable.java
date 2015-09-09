@@ -37,8 +37,9 @@ final class DollarVariable extends Interpolation {
     /**
      * Outputs the string value of the enclosed expression.
      */
-    void accept(Environment env) throws TemplateException, IOException {
+    TemplateElementsToVisit accept(Environment env) throws TemplateException, IOException {
         env.getOut().write(escapedExpression.evalAndCoerceToString(env));
+        return null;
     }
 
     protected String dump(boolean canonical, boolean inStringLiteral) {

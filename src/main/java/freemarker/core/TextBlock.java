@@ -50,10 +50,11 @@ public final class TextBlock extends TemplateElement {
     /**
      * Simply outputs the text.
      */
-    public void accept(Environment env) 
-    throws IOException
-    {
+    @Override
+    public TemplateElementsToVisit accept(Environment env)
+    throws IOException {
         env.getOut().write(text);
+        return null;
     }
 
     protected String dump(boolean canonical) {

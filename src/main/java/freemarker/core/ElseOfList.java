@@ -29,11 +29,12 @@ final class ElseOfList extends TemplateElement {
         setNestedBlock(block);
     }
 
-    void accept(Environment env) throws TemplateException, IOException 
-    {
+    @Override
+    TemplateElementsToVisit accept(Environment env) throws TemplateException, IOException {
         if (getNestedBlock() != null) {
-            env.visitByHiddingParent(getNestedBlock());
+            return new TemplateElementsToVisit(getNestedBlock(), true);
         }
+        return null;
     }
 
     protected String dump(boolean canonical) {

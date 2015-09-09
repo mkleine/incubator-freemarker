@@ -36,9 +36,10 @@ final class AttemptBlock extends TemplateElement {
         addRegulatedChild(recoveryBlock);
     }
 
-    void accept(Environment env) throws TemplateException, IOException 
-    {
+    @Override
+    TemplateElementsToVisit accept(Environment env) throws TemplateException, IOException {
         env.visitAttemptRecover(attemptBlock, recoveryBlock);
+        return null;
     }
 
     protected String dump(boolean canonical) {

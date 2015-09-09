@@ -46,7 +46,8 @@ public final class LibraryLoad extends TemplateElement {
         this.importedTemplateNameExp = templateName;
     }
 
-    void accept(Environment env) throws TemplateException, IOException {
+    @Override
+    TemplateElementsToVisit accept(Environment env) throws TemplateException, IOException {
         final String importedTemplateName = importedTemplateNameExp.evalAndCoerceToString(env);
         final String fullImportedTemplateName;
         try {
@@ -67,6 +68,7 @@ public final class LibraryLoad extends TemplateElement {
                     "):\n", new _DelayedGetMessage(e) });
         }
         env.importLib(importedTemplate, namespace);
+        return null;
     }
 
     protected String dump(boolean canonical) {

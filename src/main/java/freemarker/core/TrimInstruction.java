@@ -34,8 +34,10 @@ final class TrimInstruction extends TemplateElement {
         this.right = right;
     }
 
-    void accept(Environment env) {
+    @Override
+    TemplateElementsToVisit accept(Environment env) {
         // This instruction does nothing at render-time, only parse-time.
+        return null;
     }
 
     protected String dump(boolean canonical) {

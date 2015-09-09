@@ -32,10 +32,12 @@ final class CompressedBlock extends TemplateElement {
         setNestedBlock(nestedBlock);
     }
 
-    void accept(Environment env) throws TemplateException, IOException {
+    @Override
+    TemplateElementsToVisit accept(Environment env) throws TemplateException, IOException {
         if (getNestedBlock() != null) {
             env.visitAndTransform(getNestedBlock(), StandardCompress.INSTANCE, null);
         }
+        return null;
     }
 
     protected String dump(boolean canonical) {

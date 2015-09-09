@@ -28,10 +28,12 @@ class NoEscapeBlock extends TemplateElement {
         setNestedBlock(nestedBlock);
     }
     
-    void accept(Environment env) throws TemplateException, IOException {
+    @Override
+    TemplateElementsToVisit accept(Environment env) throws TemplateException, IOException {
         if (getNestedBlock() != null) {
-            env.visit(getNestedBlock());
+            return new TemplateElementsToVisit(getNestedBlock(), false);
         }
+        return null;
     }
 
     protected String dump(boolean canonical) {

@@ -42,7 +42,8 @@ final class BlockAssignment extends TemplateElement {
         this.scope = scope;
     }
 
-    void accept(Environment env) throws TemplateException, IOException {
+    @Override
+    TemplateElementsToVisit accept(Environment env) throws TemplateException, IOException {
         if (getNestedBlock() != null) {
             env.visitAndTransform(getNestedBlock(), new CaptureOutput(env), null);
         } else {
@@ -58,6 +59,7 @@ final class BlockAssignment extends TemplateElement {
 				env.setLocalVariable(varName, value);
 			}
 		}
+        return null;
     }
 
     private class CaptureOutput implements TemplateTransformModel {

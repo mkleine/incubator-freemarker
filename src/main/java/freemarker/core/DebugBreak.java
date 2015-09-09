@@ -35,16 +35,13 @@ public class DebugBreak extends TemplateElement
         copyLocationFrom(nestedBlock);
     }
     
-    protected void accept(Environment env) throws TemplateException, IOException
-    {
-        if(!DebuggerService.suspendEnvironment(
-                env, this.getTemplate().getSourceName(), getNestedBlock().getBeginLine()))
-        {
-            getNestedBlock().accept(env);
-        }
-        else
-        {
-            throw new StopException(env, "Stopped by debugger");        
+    @Override
+    protected TemplateElementsToVisit accept(Environment env) throws TemplateException, IOException {
+        if (!DebuggerService.suspendEnvironment(
+                env, this.getTemplate().getSourceName(), getNestedBlock().getBeginLine())) {
+            return getNestedBlock().accept(env);
+        } else {
+            throw new StopException(env, "Stopped by debugger");
         }
     }
 

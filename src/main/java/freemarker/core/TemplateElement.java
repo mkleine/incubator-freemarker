@@ -19,6 +19,7 @@ package freemarker.core;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.Enumeration;
+import java.util.List;
 
 import javax.swing.tree.TreeNode;
 
@@ -26,6 +27,8 @@ import freemarker.template.SimpleSequence;
 import freemarker.template.TemplateException;
 import freemarker.template.TemplateNodeModel;
 import freemarker.template.TemplateSequenceModel;
+
+import static java.util.Arrays.asList;
 
 /**
  * <b>Internal API - subject to change:</b> Represent directive call, interpolation, text block, or other such
@@ -72,7 +75,7 @@ abstract public class TemplateElement extends TemplateObject implements TreeNode
      *
      * @param env The runtime environment
      */
-    abstract void accept(Environment env) throws TemplateException, IOException;
+    abstract TemplateElementsToVisit accept(Environment env) throws TemplateException, IOException;
 
     /**
      * One-line description of the element, that contain all the information that is used in
@@ -322,6 +325,10 @@ abstract public class TemplateElement extends TemplateObject implements TreeNode
     
     final TemplateElement getRegulatedChild(int index) {
         return regulatedChildBuffer[index];
+    }
+
+    final List<TemplateElement> getRegulatedChildren(){
+        return asList(regulatedChildBuffer);
     }
     
     final int getIndex() {

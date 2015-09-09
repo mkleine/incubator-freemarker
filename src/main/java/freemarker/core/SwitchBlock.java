@@ -46,9 +46,9 @@ final class SwitchBlock extends TemplateElement {
         addRegulatedChild(cas);
     }
 
-    void accept(Environment env) 
-        throws TemplateException, IOException 
-    {
+    @Override
+    TemplateElementsToVisit accept(Environment env)
+        throws TemplateException, IOException {
         boolean processedCase = false;
         int ln = getRegulatedChildCount();
         try {
@@ -78,6 +78,7 @@ final class SwitchBlock extends TemplateElement {
             }
         }
         catch (BreakInstruction.Break br) {}
+        return null;
     }
 
     protected String dump(boolean canonical) {

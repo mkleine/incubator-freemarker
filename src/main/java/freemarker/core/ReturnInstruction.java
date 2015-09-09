@@ -29,7 +29,8 @@ public final class ReturnInstruction extends TemplateElement {
         this.exp = exp;
     }
 
-    void accept(Environment env) throws TemplateException {
+    @Override
+    TemplateElementsToVisit accept(Environment env) throws TemplateException {
         if (exp != null) {
             env.setLastReturnValue(exp.eval(env));
         }
@@ -41,6 +42,7 @@ public final class ReturnInstruction extends TemplateElement {
             // Here also, we need to jump out using an exception.
             throw Return.INSTANCE;
         }
+        return null;
     }
 
     protected String dump(boolean canonical) {

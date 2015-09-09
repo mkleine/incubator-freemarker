@@ -32,10 +32,12 @@ class ListElseContainer extends TemplateElement {
         this.elsePart = elsePart;
     }
 
-    void accept(Environment env) throws TemplateException, IOException {
+    @Override
+    TemplateElementsToVisit accept(Environment env) throws TemplateException, IOException {
         if (!listPart.acceptWithResult(env)) {
-            elsePart.accept(env);
+            return elsePart.accept(env);
         }
+        return null;
     }
 
     boolean isNestedBlockRepeater() {
