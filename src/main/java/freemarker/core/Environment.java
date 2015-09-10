@@ -299,7 +299,7 @@ public final class Environment extends Configurable {
             clearCachedValues();
             try {
                 doAutoImportsAndIncludes(this);
-                visit(getTemplate().getRootTreeNode());
+                visit(getTemplate().getRootTreeNode(), false);
                 // It's here as we must not flush if there was an exception.
                 if (getAutoFlush()) {
                     out.flush();
@@ -312,56 +312,45 @@ public final class Environment extends Configurable {
             threadEnv.set(savedEnv);
         }
     }
-    
+
     /**
      * "Visit" the template element.
+     *
+     * Param 'hideInParent' controls how the instruction stack is handled. If it is set to false, the current
+     * element is pushed to the instruction stack.
+     *
+     * If it is set to true, we replace the top element for the time the parameter element is
+     * visited, and then we restore the top element. The main purpose of this is to get rid of elements in the error
+     * stack trace that from user perspective shouldn't have a stack frame. The typical example is
+     * {@code [#if foo]...[@failsHere/]...[/#if]}, where the #if call shouldn't be in the stack trace. (Simply marking
+     * #if as hidden in stack traces would be wrong, because we still want to show #if when its test expression fails.)
      */
-    void visit(TemplateElement element)
-    throws TemplateException, IOException
-    {
-        pushElement(element);
+    void visit(TemplateElement element, boolean hideInParent) throws IOException, TemplateException {
+        TemplateElement parent = null;
+        if(hideInParent) {
+            parent = replaceTopElement(element);
+        } else {
+            pushElement(element);
+        }
         try {
-            accept(element);
+            TemplateElementsToVisit templateElementsToVisit = element.accept(this);
+            if(null != templateElementsToVisit) {
+                boolean hideInnerElementInParent = templateElementsToVisit.isHideInParent();
+                for (TemplateElement templateElementToVisit : templateElementsToVisit.getTemplateElements()) {
+                    if(null != templateElementToVisit) {
+                        visit(templateElementToVisit, hideInnerElementInParent);
+                    }
+                }
+            }
         } catch (TemplateException te) {
             handleTemplateException(te);
         }
         finally {
-            popElement();
-        }
-    }
-
-    private void accept(TemplateElement element) throws TemplateException, IOException {
-        TemplateElementsToVisit templateElementsToVisit = element.accept(this);
-        if(null != templateElementsToVisit) {
-            boolean hideInParent = templateElementsToVisit.isHideInParent();
-            for (TemplateElement templateElement : templateElementsToVisit.getTemplateElements()) {
-                if(null != templateElement) {
-                    if(hideInParent) {
-                        visitByHiddingParent(templateElement);
-                    } else {
-                        visit(templateElement);
-                    }
-                }
+            if(null != parent) {
+                replaceTopElement(parent);
+            } else {
+                popElement();
             }
-        }
-    }
-
-    /**
-     * Instead of pushing into the element stack, we replace the top element for the time the parameter element is
-     * visited, and then we restore the top element. The main purpose of this is to get rid of elements in the error
-     * stack trace that from user perspective shouldn't have a stack frame. The typical example is
-     * {@code [#if foo]...[@failsHere/]...[/#if]}, where the #if call shouldn't be in the stack trace. (Simply marking
-     * #if as hidden in stack traces would be wrong, because we still want to show #if when its test expression fails.)    
-     */
-    void visitByHiddingParent(TemplateElement element)
-    throws TemplateException, IOException {
-        TemplateElement parent = replaceTopElement(element);
-        try {
-            accept(element);
-        } catch (TemplateException te) {
-            handleTemplateException(te);
-        } finally {
-            replaceTopElement(parent);
         }
     }
 
@@ -437,7 +426,7 @@ public final class Environment extends Configurable {
                 if(tc == null || tc.onStart() != TransformControl.SKIP_BODY) {
                     do {
                         if(element != null) {
-                            visitByHiddingParent(element);
+                            visit(element, true);
                         }
                     } while(tc != null && tc.afterBody() == TransformControl.REPEAT_EVALUATION);
                 }
@@ -490,7 +479,7 @@ public final class Environment extends Configurable {
          boolean lastInAttemptBlock = inAttemptBlock; 
          try {
              inAttemptBlock = true;
-             visitByHiddingParent(attemptBlock);
+             visit(attemptBlock, true);
          } catch (TemplateException te) {
              thrownException = te;
          } finally {
@@ -505,7 +494,7 @@ public final class Environment extends Configurable {
              }
              try {
                  recoveredErrorStack.add(thrownException);
-                 visit(recoveryBlock);
+                 visit(recoveryBlock, false);
              } finally {
                  recoveredErrorStack.remove(recoveredErrorStack.size() -1);
              }
@@ -558,7 +547,7 @@ public final class Environment extends Configurable {
                 pushLocalContext(bodyCtx);
             }
             try {
-                visit(nestedContent);
+                visit(nestedContent, false);
             }
             finally {
                 if (invokingMacroContext.nestedContentParameterNames != null) {
@@ -2084,7 +2073,7 @@ public final class Environment extends Configurable {
         
         importMacros(includedTemplate);
         try {
-            visit(includedTemplate.getRootTreeNode());
+            visit(includedTemplate.getRootTreeNode(), false);
         }
         finally {
             if (parentReplacementOn) {
@@ -2208,7 +2197,7 @@ public final class Environment extends Configurable {
         try {
             StringWriter sw = new StringWriter();
             this.out = sw;
-            visit(te);
+            visit(te, false);
             return sw.toString();
         } 
         finally {
@@ -2267,7 +2256,7 @@ public final class Environment extends Configurable {
             Writer prevOut = out;
             out = newOut;
             try {
-                Environment.this.visit(element);
+                visit(element, false);
             }
             finally {
                 out = prevOut;
